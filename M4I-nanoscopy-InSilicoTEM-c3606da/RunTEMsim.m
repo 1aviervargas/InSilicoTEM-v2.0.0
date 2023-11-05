@@ -35,14 +35,17 @@ clear;
 time = tic;
 
 % Parameters
-mg = 5;               % Number of micrographs to generate
+mg = 1;               % Number of micrographs to generate
 pp = 1;                 % Phase plate (0 = no; 1 = yes)
+
+phase_shifts = linspace(0,pi/2,10);%pi/2*rand(1,10);
 df_range= [3000 3000];    % Defocus range [nm]
 mb_series = [0.0];      % Motion blur series (If multiple MB, enter them as a vector)
 cf_series = [14];       % Correction factor  (If multiple CF, enter them as a vector)
-dose      = [250];       % Electron dose to the specimen [e-/A2]
-pix = 1000;             % Number of pixels 
-pixsize = 1.7;          % Pixel size [A]
+dose      = [10];       % Electron dose to the specimen [e-/A2]
+%pix = 1000;             % Number of pixels 
+pix = 1000
+pixsize = 1.4;          % Pixel size [A]
 mindist = 100/pixsize;   % Minimum distance between particles divided by pixsize, 
                             % Depends on type of protein (apo ferrtin ~150)
 %dir1 =  './Micrographs'; % Select folder where to save micrographs
@@ -103,14 +106,15 @@ for micro = 1:mg
                     disp(' ')
 
                     % Run simulation to generate micrograph
-                    out = TEMsim(defocus,mb_series(mb),cf_series(cf),1,rpdb,particles,dose(d),circles,pix,pixsize,pp,mindist);
-                    ImageOut = out.series;
-                    delete ./Raw/Particles/*.raw;  % delete particle positions for the generated micrographs (for memory)
+                    out = TEMsim(defocus,mb_series(mb),cf_series(cf),1,rpdb,particles,dose(d),circles,pix,pixsize,pp,phase_shifts,mindist);
+                    %ImageOut = out.series;                    
+                    %ImageOut = out.series;
+                    delete('./Raw/Particles/*.raw')
                     
                     
                     % Write micrograph to .MRC file
-                    s1 = "MicrographNr"+ (micro) +"_size"+pix+"x"+pix+"_pixsize"+pixsize*100+"_partnr"+particles+"_dose"+dose(d)+"_cf"+cf_series(cf)+"_mb"+mb_series(cf)+"_df"+round(defocus)+"_PP"+pp+".mrc";
-                    WriteMRC(double(ImageOut),pixsize,[dir1 filesep char(s1)]);
+                    s1 = "MicrographNr"+ (micro) +"_size"+pix+"x"+pix+"_pixsize"+pixsize*100+"_partnr"+particles+"_dose"+dose(d)+"_cf"+cf_series(cf)+"_mb"+mb_series(cf)+"_df"+round(defocus)+"_PP"+pp+".mrcs";
+                    WriteMRC(double(out),pixsize,[dir1 filesep char(s1)]);
                     disp(' ')
                     disp('Successful Micrograph')
                     

@@ -9,7 +9,9 @@
 % 
 % Milos Vulovic 2013
 
-function [imStructOut] = TEMsim(df,mb,cf,saved,rpdb,p,dose,circl,pix,pixsize,pp,mindist)
+%function [imStructOut] = TEMsim(df,mb,cf,saved,rpdb,p,dose,circl,pix,pixsize,pp,phase_shifts,mindist)
+function [mics] = TEMsim(df,mb,cf,saved,rpdb,p,dose,circl,pix,pixsize,pp,phase_shifts,mindist)
+
 % ----------------------- General processing parameters (proc field)
 params.proc.N               = pix;      % Image size (field of view)
 params.proc.partNum         = p;            % Number of particles. 
@@ -96,8 +98,15 @@ end
 
 
 % ---------------------- Image Formation
-[imStructOut] = simTEM(InputVol, params2);
 
+mics = [];
+idx =1;
+for shift = phase_shifts
+    params2.mic.PP_Phase = shift;       % Phase plate phase shift [rad] *pi
+    [imStructOut] = simTEM(InputVol, params2);
+    mics(:,:,idx) = double(imStructOut.series);
+    idx=idx+1;
+end
 
 % ---------------------- Display
 switch params.disp.generateWhat
