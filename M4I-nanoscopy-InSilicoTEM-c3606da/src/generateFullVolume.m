@@ -67,6 +67,13 @@ if strcmp(params2.spec.source, 'pdb')
         xt=xt'; yt=yt'; zt=zt';
     else
        [xt, yt, zt, numpart] = RndPos(params2,mindista, zrange,circ);
+       
+       %JV
+       %xt = 0;
+       %yt = 0;
+       %zt = 0;
+       %JV
+       
     end  
 
     transl = [xt, yt, zt];

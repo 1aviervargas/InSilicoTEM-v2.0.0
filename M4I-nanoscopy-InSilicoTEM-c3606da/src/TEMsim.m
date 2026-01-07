@@ -10,12 +10,17 @@
 % Milos Vulovic 2013
 
 %function [imStructOut] = TEMsim(df,mb,cf,saved,rpdb,p,dose,circl,pix,pixsize,pp,phase_shifts,mindist)
-function [mics] = TEMsim(df,mb,cf,saved,rpdb,p,dose,circl,pix,pixsize,pp,phase_shifts,mindist)
+function [mics, simMeta] = TEMsim(df,mb,cf,saved,rpdb,p,dose,circl,pix,pixsize,pp,phase_shifts,mindist)
 
 % ----------------------- General processing parameters (proc field)
 params.proc.N               = pix;      % Image size (field of view)
 params.proc.partNum         = p;            % Number of particles. 
+
+%JV
 params.proc.geom            = 0;            % Specify orientation and translation of particles in 'PartList.m' (=1) or generate them randomly (=0) 
+%params.proc.geom            = 0;            % Specify orientation and translation of particles in 'PartList.m' (=1) or generate them randomly (=0) 
+%JV
+
 params.proc.cores           = 10;           % the numer of matlab pools to be open for parfor loops 
 params.proc.rawdir          = './Raw';
 
@@ -72,7 +77,11 @@ params.cam.DQEflag          = 1; % Flag for dqe (=0 means NTF = MTF)
 
 
 % ---------------------- Display what? (disp field)
+%JV
+%params.disp.generateWhat   = 'im'; % Options: 'im', 'exitw', 'imNoiseless'
 params.disp.generateWhat   = 'im'; % Options: 'im', 'exitw', 'imNoiseless'
+%JV
+
 params.disp.ctf            = 0; % Flag to display CTF
 params.disp.mtfdqe         = 0; % Flag to display MTF and DQE
 
@@ -96,22 +105,23 @@ end
 % ---------------------- Padding and placing the particles within the volume
 [InputVol, PosOrient] = generateFullVolume(PartPot,params2,circl,mindist);
 
-
 % ---------------------- Image Formation
 
 mics = [];
+simMeta = struct();
 idx =1;
 for shift = phase_shifts
     params2.mic.PP_Phase = shift;       % Phase plate phase shift [rad] *pi
     [imStructOut] = simTEM(InputVol, params2);
     mics(:,:,idx) = double(imStructOut.series);
     idx=idx+1;
+
 end
 
 % ---------------------- Display
 switch params.disp.generateWhat
     case 'im'
-           dipshow(imStructOut.series, 'lin')
+           %dipshow(imStructOut.series, 'lin')
     case 'exitw'
            dipshow(imStructOut.exit, 'lin')
     case 'imNoiseless'
@@ -136,4 +146,22 @@ end
 
 
 
+if nargout > 1
+    simMeta = struct(...
+        'positions', PosOrient, ...
+        'defocus_nm', df, ...
+        'dose_e_per_A2', dose, ...
+        'pixelSize_A', pixsize, ...
+        'voltage_kV', params2.acquis.Voltage/1e3, ...
+        'cs_mm', params2.mic.Cs*1e3, ...
+        'astigmatism_nm', params2.acquis.ast*1e9, ...
+        'astigmatismAngle_deg', params2.acquis.astangle*180/pi, ...
+        'phaseShift_rad', phase_shifts, ...
+        'phasePlateEnabled', pp, ...
+        'motionBlur_A', mb, ...
+        'corrFactor', cf, ...
+        'particleCount', params2.proc.partNum);
 end
+
+end
+

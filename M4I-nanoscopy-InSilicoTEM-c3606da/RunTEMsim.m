@@ -38,18 +38,29 @@ time = tic;
 mg = 1;               % Number of micrographs to generate
 pp = 1;                 % Phase plate (0 = no; 1 = yes)
 
-phase_shifts = linspace(0,pi/2,10);%pi/2*rand(1,10);
-df_range= [3000 3000];    % Defocus range [nm]
+%phase_shifts = linspace(0,pi,10);%pi/2*rand(1,10);
+%phase_shifts = rand(1,50)*(pi);
+%phase_shifts = [pi/2, pi/2, pi/2];
+phase_shifts = pi/2;
+
+df_range= [0 1500];    % Defocus range [nm]
 mb_series = [0.0];      % Motion blur series (If multiple MB, enter them as a vector)
 cf_series = [14];       % Correction factor  (If multiple CF, enter them as a vector)
-dose      = [10];       % Electron dose to the specimen [e-/A2]
+
+dose      = [1000000];
+%dose      = [100];       % Electron dose to the specimen [e-/A2]
 %pix = 1000;             % Number of pixels 
-pix = 1000
-pixsize = 1.4;          % Pixel size [A]
-mindist = 100/pixsize;   % Minimum distance between particles divided by pixsize, 
+pix = 500
+
+pixsize = 0.5;          % Pixel size [A]
+mindist = 80/pixsize;   % Minimum distance between particles divided by pixsize, 
                             % Depends on type of protein (apo ferrtin ~150)
+
+%pixsize = 1.1;          % Pixel size [A]
+%mindist = 150/pixsize;   % Minimum distance between particles divided by pixsize, 
 %dir1 =  './Micrographs'; % Select folder where to save micrographs
-dir1 = '/media/jvargas/DATA/jvargas/micSimul/WPP';
+%dir1 = '/media/jvargas/DATA/jvargas/micSimul/WPP';
+dir1 = '/media/jvargas/DATA/jvargas/micSimul/WOPP';
 
 
 tot = mg*length(mb_series)*length(cf_series)*length(dose);
