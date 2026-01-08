@@ -9,3 +9,6 @@ addpath('/home/jvargas/Software/InSilicoTEM-v2.0.0');
 
 dip_initialise
 dipsetpref('imagefilepath','/herebeimages')
+
+addpath(genpath('M4I-nanoscopy-InSilicoTEM-c3606da'))
+
