@@ -48,7 +48,7 @@ df_range= [0 2500];    % Defocus range [nm]
 mb_series = [0.0];      % Motion blur series (If multiple MB, enter them as a vector)
 cf_series = [14];       % Correction factor  (If multiple CF, enter them as a vector)
 
-dose      = 10000000*ones(1,2);
+dose      = 10000000*ones(1,100);
 %dose      = [100];       % Electron dose to the specimen [e-/A2]
 %pix = 1000;             % Number of pixels 
 pix = 800 %500
